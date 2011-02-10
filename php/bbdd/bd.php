@@ -1,5 +1,6 @@
 <?php
 include "../../web/conf.php";
+//include ( __DIR__."/conf.php");
 
 # ptuit
 #
@@ -41,27 +42,28 @@ class bd{
    $this->db = NULL; 
   }
 
-  protected function recogerPrepararDatosSelect($tabla,$array){   //con prepare recojo datos en vble array y le quito comas/comillas... etc.
+  protected function recogerPrepararDatosSelect($tabla,$array,$consulta){   //con prepare recojo datos en vble array y le quito comas/comillas... etc.
 
     for ($i=0; $i<count($array); $i++)       
     {       
       if ($array[1]==null and $tabla=="usuario") $i++; 
-      $a= $this->db;
-      $a->bindParam($i,$array[$i]);
+      // $a= $this->db;
+      $consulta->bindParam($i,$array[$i]);
       $arrayPrepared[$i]=$array[$i].', ';      
       print ($arrayPrepared[$i]);
-    }  
+    }      
     $arrayPreparedSelect[$i]=rtrim($arrayPrepared[$i],", ");
+    //$consulta->execute();
     return $arrayPreparedSelect;    
 }
 
- protected function recogerPrepararDatosWhere($tabla,$array){ 
+ protected function recogerPrepararDatosWhere($tabla,$array){  //formato: campo=valor
  
     for ($i=0; $i<count($array); $i++)       
     { if ($array[1]==null and $tabla=="usuario") $i++;       
       $a= $this->db;
       $a->bindParam($i,$array[$i]);
-      $arrayPrepared[$i]= $arrayPrepared[$i]." ".$campos[$i]."=".$arrayPrepared[$i]." and ";       
+      $arrayPrepared[$i]= $arrayPrepared[$i]." and ";      //" ".$campos[$i]."=".$arrayPrepared[$i]." and ";       
       print ($arrayPrepared[$i]);
     }  
     $arrayPreparedWhere[$i]=rtrim($arrayPrepared[$i]," and ");
@@ -89,11 +91,30 @@ class bd{
   
   protected function select($tabla,$arraySelect,$arrayWhere){   
 
-    $this->db = conexionBd();
-    
-    $consulta = $this->db->prepare("SELECT $arrayPreparedSelect FROM $tabla WHERE $arrayPreparedWhere");
-    $arrayPreparedSelect=$this->recogerPrepararDatosSelect($tabla,$arraySelect);  
-    $arrayPreparedWhere=$this->recogerPrepararDatosWhere($tabla,$arrayWhere); 
+    $this->db->conexionBd();
+
+    //array select
+    for ($i=0; $i<count($array); $i++)       
+    {    if ($array[1]==null and $tabla=="usuario") $i++;      
+         $arrayPrepared[$i]=$array[$i].', ';      
+         print ($arrayPrepared[$i]);
+    }      
+    $arrayPreparedSelect[$i]=rtrim($arrayPrepared[$i],", ");
+
+   //array where
+   for ($i=0; $i<count($array); $i++)       
+    {   if ($array[1]==null and $tabla=="usuario") $i++;        
+        $arrayPre[$i]= $arrayPre[$i]." and ";           
+        print ($arrayPre[$i]);
+    }  
+    $arrayPreparedWhere[$i]=rtrim($arrayPre[$i]," and ");
+
+      
+    $consulta ="SELECT ".$arrayPreparedSelect." FROM ".$tabla. " WHERE ".$arrayPreparedWhere;
+     
+    //$this->db->prepare("SELECT $arraySelect FROM $tabla WHERE $arrayWhere");
+    //$arrayPreparedSelect=$this->recogerPrepararDatosSelect($tabla,$arraySelect); //,$consulta);  
+    //$arrayPreparedWhere=$this->recogerPrepararDatosWhere($tabla,$arrayWhere); 
    
     $result = $this->db->query($consulta);
     if (!$result) { 
@@ -115,7 +136,7 @@ class bd{
     $this->db = conexionBd();
     //$arrayPreparedSelect=recogerPrepararDatosSelect();
      
-    $consulta = $this->db->prepare("UPDATE $tabla SET $arrayPreparedSet WHERE $arrayPreparedWhere");
+    $consulta = $this->db->prepare("UPDATE $tabla SET $arraySet WHERE $arrayWhere");
     $arrayPreparedWhere=$this->recogerPrepararDatosWhere($tabla,$arrayWhere); 
     $arrayPreparedSet=$this->recogerPrepararDatos_campoValor($tabla,$arraySet); 
      
@@ -135,7 +156,7 @@ class bd{
     $this->db=conexionBd();
     //$arrayPrepared=recogerPrepararDatosSelect($tabla,$array);
    
-    $consulta=$this->db->prepare("INSERT INTO $tabla VALUES ($arrayPreparedInsert)");
+    $consulta=$this->db->prepare("INSERT INTO $tabla VALUES ($array)");
     $arrayPreparedInsert=$this->recogerPrepararDatos_campoValor($tabla,$array);   
  
     if ($this->db->query($consulta)) { 
@@ -152,7 +173,7 @@ class bd{
   protected function delete($tabla,$arrayWhere){   
     $this->db=conexionBd();
   
-    $consulta="DELETE FROM $tabla WHERE $arrayPreparedWhere";
+    $consulta="DELETE FROM $tabla WHERE $arrayWhere";
     $arrayPreparedWhere=$this->recogerPrepararDatosWhere($tabla,$arrayWhere); 
 
     if ($this->db->query($consulta)) { 
