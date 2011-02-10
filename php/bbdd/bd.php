@@ -1,6 +1,4 @@
 <?php
-include "../../web/conf.php";
-//include ( __DIR__."/conf.php");
 
 # ptuit
 #
@@ -108,7 +106,6 @@ class bd{
         print ($arrayPre[$i]);
     }  
     $arrayPreparedWhere[$i]=rtrim($arrayPre[$i]," and ");
-
       
     $consulta ="SELECT ".$arrayPreparedSelect." FROM ".$tabla. " WHERE ".$arrayPreparedWhere;
      
