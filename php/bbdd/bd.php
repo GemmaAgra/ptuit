@@ -1,5 +1,4 @@
 <?php
-
 # ptuit
 #
 # Copyright © 2011 Gemma Agramonte <mail>
@@ -18,7 +17,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with ptuit. If not, see <http://www.gnu.org/licenses/>.
-
 
 class bd{
 
@@ -124,8 +122,8 @@ class bd{
 	    print "<p>$valor</p>\n";  //para comprobar, poner x campos
 	  return true;
 	}
-    }
-    $this->db = NULL;       
+    }   
+    $this->db=desconexionBd(); 
   } 
 
   protected function update($tabla,$arraySet,$arrayWhere){    
@@ -145,7 +143,7 @@ class bd{
        print "<p>Error al modificar el registro.</p>\n"; 
        return false;
     }
-    $this->db = NULL;
+    $this->db=desconexionBd();
    }
 
    protected function insert($tabla,$array){     
@@ -164,7 +162,7 @@ class bd{
        print "<p>Error al crear el registro.<p>"; 
        return false;
     }
-    $this->db = NULL;
+    $this->db=desconexionBd();
    }
 
   protected function delete($tabla,$arrayWhere){   
@@ -180,7 +178,7 @@ class bd{
     else { 
         print "<p>Error al borrar el registro.</p>\n"; 
         return false;}
-    $this->db = NULL;
+    $this->db=desconexionBd();
   }
 }
 ?>
